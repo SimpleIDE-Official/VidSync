@@ -22,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.compose.ui.window.DialogProperties
 import com.itsvks.vidsync.ui.theme.VidSyncTheme
+import java.util.Locale
 
 @Composable
 fun ProgressDialog(
@@ -49,7 +50,7 @@ fun ProgressDialog(
             ) {
                 if (message.isNotBlank() && message.isNotEmpty()) {
                     if (progress != null) {
-                        Text(text = "$message (${progress() * 100f}%)")
+                        Text(text = "$message (${String.format(Locale.getDefault(), "%.1f", (progress() * 100f).coerceAtLeast(0f))}%)")
                     } else {
                         Text(text = message)
                     }
