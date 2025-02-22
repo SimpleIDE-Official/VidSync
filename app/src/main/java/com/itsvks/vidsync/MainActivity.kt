@@ -37,7 +37,6 @@ import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withLink
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.lifecycleScope
 import com.itsvks.vidsync.ui.component.ProgressDialog
 import com.itsvks.vidsync.ui.component.VidSyncButton
 import com.itsvks.vidsync.ui.component.VidSyncTextField
@@ -54,28 +53,42 @@ class MainActivity : ComponentActivity() {
     @Suppress("LocalVariableName")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        lifecycleScope.launch {
-            withContext(Dispatchers.IO) {
-                runCatching {
-                    YoutubeDL.getInstance().updateYoutubeDL(applicationContext, YoutubeDL.UpdateChannel.STABLE)
-                }.onFailure {
-                    Log.e("aaaa", it.message, it)
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, it.message.toString(), Toast.LENGTH_LONG).show()
-                    }
-                }.onSuccess {
-                    Log.i("aaaa", "YoutubeDL updated")
-                    withContext(Dispatchers.Main) {
-                        Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_LONG).show()
-                    }
-                }
-            }
-        }
-
         enableEdgeToEdge()
         setContent {
             VidSyncTheme {
+                var showUpdatingDialog by remember { mutableStateOf(false) }
+
+                LaunchedEffect(Unit) {
+                    showUpdatingDialog = true
+
+                    withContext(Dispatchers.IO) {
+                        runCatching {
+                            YoutubeDL.getInstance().updateYoutubeDL(applicationContext, YoutubeDL.UpdateChannel.STABLE)
+                        }.onFailure {
+                            showUpdatingDialog = false
+
+                            Log.e("aaaa", it.message, it)
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@MainActivity, it.message.toString(), Toast.LENGTH_LONG).show()
+                            }
+                        }.onSuccess {
+                            showUpdatingDialog = false
+
+                            Log.i("aaaa", "YoutubeDL updated")
+                            withContext(Dispatchers.Main) {
+                                Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_LONG).show()
+                            }
+                        }
+                    }
+                }
+
+                if (showUpdatingDialog) {
+                    ProgressDialog(
+                        onDismissRequest = { showUpdatingDialog = false },
+                        message = "Checking for updates..."
+                    )
+                }
+
                 val scope = rememberCoroutineScope()
                 val uriHandler = LocalUriHandler.current
 
@@ -112,12 +125,13 @@ class MainActivity : ComponentActivity() {
                     Column(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(innerPadding),
+                            .padding(innerPadding)
+                            .padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
                         verticalArrangement = Arrangement.Center
                     ) {
                         if (URLUtil.isValidUrl(url)) {
-                            Column(modifier = Modifier.padding(8.dp)) {
+                            Column {
                                 if (!playableLink.isNullOrEmpty()) {
                                     Text(text = buildAnnotatedString {
                                         append("Video Link: ")

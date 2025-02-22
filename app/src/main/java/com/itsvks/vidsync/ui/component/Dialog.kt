@@ -54,7 +54,7 @@ fun ProgressDialog(
                         Text(text = message)
                     }
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
                 }
 
                 progress?.let {
