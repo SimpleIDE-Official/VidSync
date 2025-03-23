@@ -13,7 +13,7 @@ android {
         minSdk = 24
         targetSdk = 35
         versionCode = 1
-        versionName = "1.0"
+        versionName = "1.1"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
@@ -21,11 +21,20 @@ android {
             abiFilters.addAll(listOf("armeabi-v7a", "arm64-v8a", "x86", "x86_64"))
         }
     }
+    signingConfigs {
+        create("release") {
+            storeFile = file("/storage/emulated/0/AndroidIDEProjects/New_Key_20250319_145959.keystore")
+            storePassword = "JJ@gsV7EnyEzZJJ"
+            keyAlias = "GeneralKaos666"
+            keyPassword = "gPLy-$2vVo2b-Ad"
+        }
+    }
 
     buildTypes {
         release {
             isMinifyEnabled = false
             proguardFiles(getDefaultProguardFile("proguard-android-optimize.txt"), "proguard-rules.pro")
+            signingConfig = signingConfigs.getByName("release") // Link the signing config
         }
     }
 

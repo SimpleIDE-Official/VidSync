@@ -47,6 +47,8 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.io.File
+import java.text.SimpleDateFormat
+import java.util.Date
 
 class MainActivity : ComponentActivity() {
 
@@ -76,7 +78,7 @@ class MainActivity : ComponentActivity() {
 
                             Log.i("aaaa", "YoutubeDL updated")
                             withContext(Dispatchers.Main) {
-                                Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_LONG).show()
+                                Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_SHORT).show()
                             }
                         }
                     }
@@ -208,12 +210,18 @@ class MainActivity : ComponentActivity() {
                     }
 
                     if (showDownloadingDialog) {
+                        val message = if (etaInSeconds <= 0L) {
+                            "Starting..."
+                        } else {
+                            "Downloading..."
+                        }
+
                         ProgressDialog(
                             onDismissRequest = {
                                 showDownloadingDialog = false
                             },
                             progress = { progress / 100f },
-                            message = "Downloading... (ETA ${etaInSeconds}s)"
+                            message = "$message (ETA ${etaInSeconds.coerceAtLeast(0L)}s)"
                         )
                     }
                 }

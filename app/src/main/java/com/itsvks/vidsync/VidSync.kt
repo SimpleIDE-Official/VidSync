@@ -6,6 +6,11 @@ import com.yausername.aria2c.Aria2c
 import com.yausername.ffmpeg.FFmpeg
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLException
+import kotlinx.coroutines.DelicateCoroutinesApi
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 class VidSync : Application() {
 
@@ -13,14 +18,19 @@ class VidSync : Application() {
         private const val TAG = "VidSync"
     }
 
+    @OptIn(DelicateCoroutinesApi::class)
     override fun onCreate() {
         super.onCreate()
-        try {
-            YoutubeDL.getInstance().init(this)
-            FFmpeg.getInstance().init(this)
-            Aria2c.getInstance().init(this)
-        } catch (e: YoutubeDLException) {
-            Log.e(TAG, "failed to initialize youtubedl-android", e)
+        GlobalScope.launch {
+            withContext(Dispatchers.IO) {
+                try {
+                    YoutubeDL.getInstance().init(applicationContext)
+                    FFmpeg.getInstance().init(applicationContext)
+                    Aria2c.getInstance().init(applicationContext)
+                } catch (e: YoutubeDLException) {
+                    Log.e(TAG, "failed to initialize youtubedl-android", e)
+                }
+            }
         }
     }
 }
