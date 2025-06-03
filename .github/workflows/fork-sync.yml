@@ -18,10 +18,10 @@ jobs:
       - uses: tgymnich/fork-sync@v2.0
         with:
           token: ${{ github.token }}
-          repo:  VidSync
-          owner:  SimpleIDE-Official
+          repo: VidSync
+          owner: SimpleIDE-Official
           base: master
           head: master
           merge_method:	merge
-          #auto_approve: false
-          #auto_merge: true
+          auto_approve: true
+          auto_merge: true
