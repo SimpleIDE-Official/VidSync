@@ -6,7 +6,7 @@ ytdl = "0.17.4"
 agp = "8.10.1"
 #ytdl = "0.17.2"
 #>>>>>>> main
-kotlin = "2.0.21"
+kotlin = "2.1.21"
 coreKtx = "1.15.0"
 junit = "4.13.2"
 junitVersion = "1.2.1"
