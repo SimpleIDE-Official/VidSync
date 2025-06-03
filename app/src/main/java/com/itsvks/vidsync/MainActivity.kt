@@ -43,12 +43,10 @@ import com.itsvks.vidsync.ui.component.VidSyncTextField
 import com.itsvks.vidsync.ui.theme.VidSyncTheme
 import com.yausername.youtubedl_android.YoutubeDL
 import com.yausername.youtubedl_android.YoutubeDLRequest
+import java.io.File
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
-import java.io.File
-import java.text.SimpleDateFormat
-import java.util.Date
 
 class MainActivity : ComponentActivity() {
 
@@ -65,29 +63,41 @@ class MainActivity : ComponentActivity() {
 
                     withContext(Dispatchers.IO) {
                         runCatching {
-                            YoutubeDL.getInstance().updateYoutubeDL(applicationContext, YoutubeDL.UpdateChannel.STABLE)
-                        }.onFailure {
-                            showUpdatingDialog = false
-
-                            Log.e("aaaa", it.message, it)
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@MainActivity, it.message.toString(), Toast.LENGTH_LONG).show()
+                                YoutubeDL.getInstance()
+                                    .updateYoutubeDL(
+                                        applicationContext,
+                                        YoutubeDL.UpdateChannel.STABLE,
+                                    )
                             }
-                        }.onSuccess {
-                            showUpdatingDialog = false
+                            .onFailure {
+                                showUpdatingDialog = false
 
-                            Log.i("aaaa", "YoutubeDL updated")
-                            withContext(Dispatchers.Main) {
-                                Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_SHORT).show()
+                                Log.e("aaaa", it.message, it)
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(
+                                            this@MainActivity,
+                                            it.message.toString(),
+                                            Toast.LENGTH_LONG,
+                                        )
+                                        .show()
+                                }
                             }
-                        }
+                            .onSuccess {
+                                showUpdatingDialog = false
+
+                                Log.i("aaaa", "YoutubeDL updated")
+                                withContext(Dispatchers.Main) {
+                                    Toast.makeText(this@MainActivity, "updated", Toast.LENGTH_SHORT)
+                                        .show()
+                                }
+                            }
                     }
                 }
 
                 if (showUpdatingDialog) {
                     ProgressDialog(
                         onDismissRequest = { showUpdatingDialog = false },
-                        message = "Checking for updates..."
+                        message = "Checking for updates...",
                     )
                 }
 
@@ -106,57 +116,75 @@ class MainActivity : ComponentActivity() {
 
                     withContext(Dispatchers.IO) {
                         if (URLUtil.isValidUrl(url)) {
-                            val request = YoutubeDLRequest(url).apply {
-                                addOption("-f", "best")
-                            }
+                            val request = YoutubeDLRequest(url).apply { addOption("-f", "best") }
 
                             runCatching {
-                                val streamInfo = YoutubeDL.getInstance().getInfo(request = request)
-                                playableLink = streamInfo.url
-                            }.onFailure {
-                                Log.e("aaaa", it.message, it)
-                                withContext(Dispatchers.Main) {
-                                    Toast.makeText(this@MainActivity, it.message.toString(), Toast.LENGTH_LONG).show()
+                                    val streamInfo =
+                                        YoutubeDL.getInstance().getInfo(request = request)
+                                    playableLink = streamInfo.url
                                 }
-                            }
+                                .onFailure {
+                                    Log.e("aaaa", it.message, it)
+                                    withContext(Dispatchers.Main) {
+                                        Toast.makeText(
+                                                this@MainActivity,
+                                                it.message.toString(),
+                                                Toast.LENGTH_LONG,
+                                            )
+                                            .show()
+                                    }
+                                }
                         }
                     }
                 }
 
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                     Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(innerPadding)
-                            .padding(8.dp),
+                        modifier = Modifier.fillMaxSize().padding(innerPadding).padding(8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+                        verticalArrangement = Arrangement.Center,
                     ) {
                         if (URLUtil.isValidUrl(url)) {
                             Column {
                                 if (!playableLink.isNullOrEmpty()) {
-                                    Text(text = buildAnnotatedString {
-                                        append("Video Link: ")
-                                        withLink(
-                                            LinkAnnotation.Url(
-                                                url = playableLink!!,
-                                                styles = TextLinkStyles(
-                                                    style = SpanStyle(
-                                                        color = MaterialTheme.colorScheme.primary,
-                                                        textDecoration = TextDecoration.Underline
-                                                    ),
-                                                    pressedStyle = SpanStyle(
-                                                        color = MaterialTheme.colorScheme.secondary,
-                                                        textDecoration = TextDecoration.Underline
-                                                    ),
-                                                ),
-                                                linkInteractionListener = {
-                                                    val uri = (it as LinkAnnotation.Url).url
-                                                    uriHandler.openUri(uri)
+                                    Text(
+                                        text =
+                                            buildAnnotatedString {
+                                                append("Video Link: ")
+                                                withLink(
+                                                    LinkAnnotation.Url(
+                                                        url = playableLink!!,
+                                                        styles =
+                                                            TextLinkStyles(
+                                                                style =
+                                                                    SpanStyle(
+                                                                        color =
+                                                                            MaterialTheme
+                                                                                .colorScheme
+                                                                                .primary,
+                                                                        textDecoration =
+                                                                            TextDecoration.Underline,
+                                                                    ),
+                                                                pressedStyle =
+                                                                    SpanStyle(
+                                                                        color =
+                                                                            MaterialTheme
+                                                                                .colorScheme
+                                                                                .secondary,
+                                                                        textDecoration =
+                                                                            TextDecoration.Underline,
+                                                                    ),
+                                                            ),
+                                                        linkInteractionListener = {
+                                                            val uri = (it as LinkAnnotation.Url).url
+                                                            uriHandler.openUri(uri)
+                                                        },
+                                                    )
+                                                ) {
+                                                    append(playableLink!!)
                                                 }
-                                            )
-                                        ) { append(playableLink!!) }
-                                    })
+                                            }
+                                    )
                                 } else {
                                     Text(text = "Loading info...")
                                 }
@@ -167,61 +195,85 @@ class MainActivity : ComponentActivity() {
 
                         VidSyncTextField(
                             text = url,
-                            onTextChange = {
-                                url = it
-                            },
+                            onTextChange = { url = it },
                             placeholder = "Enter video link",
-                            isError = !URLUtil.isValidUrl(url)
+                            isError = !URLUtil.isValidUrl(url),
                         )
 
                         Spacer(modifier = Modifier.height(4.dp))
 
-                        VidSyncButton(
-                            text = "Download",
-                            enabled = URLUtil.isValidUrl(url)
-                        ) {
+                        VidSyncButton(text = "Download", enabled = URLUtil.isValidUrl(url)) {
                             showDownloadingDialog = true
 
-                            val downloadLocation = File(Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS), "VidSync")
-                            val request = YoutubeDLRequest(url).apply {
-                                addOption("-o", "${downloadLocation.absolutePath}/%(title)s.%(ext)s")
-                            }
+                            val downloadLocation =
+                                File(
+                                    Environment.getExternalStoragePublicDirectory(
+                                        Environment.DIRECTORY_DOWNLOADS
+                                    ),
+                                    "VidSync",
+                                )
+                            val request =
+                                YoutubeDLRequest(url).apply {
+                                    addOption(
+                                        "-o",
+                                        "${downloadLocation.absolutePath}/%(title)s.%(ext)s",
+                                    )
+                                }
 
                             scope.launch(Dispatchers.IO) {
                                 runCatching {
-                                    YoutubeDL.getInstance().execute(request) { _progress, _etaInSeconds, _ ->
-                                        progress = _progress
-                                        etaInSeconds = _etaInSeconds
+                                        YoutubeDL.getInstance().execute(request) {
+                                            _progress,
+                                            _etaInSeconds,
+                                            _ ->
+                                            progress = _progress
+                                            etaInSeconds = _etaInSeconds
+                                        }
                                     }
-                                }.onFailure {
-                                    Log.e("aaaa", it.message, it)
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(this@MainActivity, it.message.toString(), Toast.LENGTH_LONG).show()
+                                    .onFailure {
+                                        Log.e("aaaa", it.message, it)
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                    this@MainActivity,
+                                                    it.message.toString(),
+                                                    Toast.LENGTH_LONG,
+                                                )
+                                                .show()
+                                        }
                                     }
-                                }.onSuccess {
-                                    showDownloadingDialog = false
-                                    withContext(Dispatchers.Main) {
-                                        Toast.makeText(this@MainActivity, "Download Complete", Toast.LENGTH_SHORT).show()
+                                    .onSuccess {
+                                        showDownloadingDialog = false
+                                        withContext(Dispatchers.Main) {
+                                            Toast.makeText(
+                                                    this@MainActivity,
+                                                    "Download Complete",
+                                                    Toast.LENGTH_SHORT,
+                                                )
+                                                .show()
+                                        }
+                                        sendBroadcast(
+                                            Intent(
+                                                Intent.ACTION_MEDIA_SCANNER_SCAN_FILE,
+                                                Uri.fromFile(downloadLocation),
+                                            )
+                                        )
                                     }
-                                    sendBroadcast(Intent(Intent.ACTION_MEDIA_SCANNER_SCAN_FILE, Uri.fromFile(downloadLocation)))
-                                }
                             }
                         }
                     }
 
                     if (showDownloadingDialog) {
-                        val message = if (etaInSeconds <= 0L) {
-                            "Starting..."
-                        } else {
-                            "Downloading..."
-                        }
+                        val message =
+                            if (etaInSeconds <= 0L) {
+                                "Starting..."
+                            } else {
+                                "Downloading..."
+                            }
 
                         ProgressDialog(
-                            onDismissRequest = {
-                                showDownloadingDialog = false
-                            },
+                            onDismissRequest = { showDownloadingDialog = false },
                             progress = { progress / 100f },
-                            message = "$message (ETA ${etaInSeconds.coerceAtLeast(0L)}s)"
+                            message = "$message (ETA ${etaInSeconds.coerceAtLeast(0L)}s)",
                         )
                     }
                 }

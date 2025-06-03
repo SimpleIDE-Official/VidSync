@@ -19,17 +19,15 @@ fun VidSyncTextField(
     onTextChange: (String) -> Unit,
     modifier: Modifier = Modifier,
     placeholder: String = "",
-    isError: Boolean = false
+    isError: Boolean = false,
 ) {
     OutlinedTextField(
         value = text,
         onValueChange = onTextChange,
         modifier = modifier,
         shape = MaterialTheme.shapes.medium,
-        placeholder = {
-            Text(text = placeholder)
-        },
-        isError = isError
+        placeholder = { Text(text = placeholder) },
+        isError = isError,
     )
 }
 
@@ -39,12 +37,6 @@ fun VidSyncTextFieldPreview() {
     VidSyncTheme {
         var value by remember { mutableStateOf("") }
 
-        VidSyncTextField(
-            text = value,
-            onTextChange = {
-                value = it
-            },
-            placeholder = "Placeholder"
-        )
+        VidSyncTextField(text = value, onTextChange = { value = it }, placeholder = "Placeholder")
     }
 }

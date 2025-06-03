@@ -29,28 +29,25 @@ fun ProgressDialog(
     onDismissRequest: () -> Unit,
     modifier: Modifier = Modifier,
     progress: (() -> Float)? = null,
-    message: String = ""
+    message: String = "",
 ) {
     Dialog(
         onDismissRequest = onDismissRequest,
-        properties = DialogProperties(
-            dismissOnClickOutside = false,
-            dismissOnBackPress = false
-        )
+        properties = DialogProperties(dismissOnClickOutside = false, dismissOnBackPress = false),
     ) {
         Card(
             modifier = modifier,
             shape = MaterialTheme.shapes.large,
-            colors = CardDefaults.cardColors(
-                containerColor = MaterialTheme.colorScheme.surfaceContainer
-            )
+            colors =
+                CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceContainer),
         ) {
-            Column(
-                modifier = Modifier.padding(24.dp)
-            ) {
+            Column(modifier = Modifier.padding(24.dp)) {
                 if (message.isNotBlank() && message.isNotEmpty()) {
                     if (progress != null) {
-                        Text(text = "$message (${String.format(Locale.getDefault(), "%.1f", (progress() * 100f).coerceAtLeast(0f))}%)")
+                        Text(
+                            text =
+                                "$message (${String.format(Locale.getDefault(), "%.1f", (progress() * 100f).coerceAtLeast(0f))}%)"
+                        )
                     } else {
                         Text(text = message)
                     }
@@ -58,14 +55,8 @@ fun ProgressDialog(
                     Spacer(modifier = Modifier.height(6.dp))
                 }
 
-                progress?.let {
-                    LinearProgressIndicator(
-                        progress = it,
-                        drawStopIndicator = {}
-                    )
-                } ?: run {
-                    LinearProgressIndicator()
-                }
+                progress?.let { LinearProgressIndicator(progress = it, drawStopIndicator = {}) }
+                    ?: run { LinearProgressIndicator() }
             }
         }
     }
@@ -76,16 +67,13 @@ fun ProgressDialog(
 fun ProgressDialogPreview() {
     VidSyncTheme {
         var show by remember { mutableStateOf(true) }
-        val progress by animateFloatAsState(
-            targetValue = 0.76f,
-            visibilityThreshold = 0.1f,
-            label = "progress",
-        )
+        val progress by
+            animateFloatAsState(targetValue = 0.76f, visibilityThreshold = 0.1f, label = "progress")
 
         ProgressDialog(
             onDismissRequest = { show = !show },
             progress = { progress },
-            message = "Downloading..."
+            message = "Downloading...",
         )
     }
 }

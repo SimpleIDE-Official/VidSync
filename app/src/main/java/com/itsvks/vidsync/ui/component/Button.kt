@@ -14,24 +14,20 @@ fun VidSyncButton(
     text: String,
     modifier: Modifier = Modifier,
     enabled: Boolean = true,
-    onClick: () -> Unit = {}
+    onClick: () -> Unit = {},
 ) {
     Button(
         onClick = onClick,
         modifier = modifier,
         enabled = enabled,
-        shape = MaterialTheme.shapes.medium
+        shape = MaterialTheme.shapes.medium,
     ) {
-        Text(
-            text = text,
-        )
+        Text(text = text)
     }
 }
 
 @Preview(wallpaper = Wallpapers.BLUE_DOMINATED_EXAMPLE)
 @Composable
 fun VidSyncButtonPreview() {
-    VidSyncTheme {
-        VidSyncButton("Button")
-    }
+    VidSyncTheme { VidSyncButton("Button") }
 }

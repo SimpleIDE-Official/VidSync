@@ -29,16 +29,15 @@ fun String.linkify() = buildAnnotatedString {
                 linkInteractionListener = {
                     val url = (it as LinkAnnotation.Url).url
                     uriHandler.openUri(url)
-                }
+                },
             ),
             start = start,
-            end = end
+            end = end,
         )
     }
 }
 
-fun AnnotatedString.urlAt(position: Int, onFound: (String) -> Unit) = getStringAnnotations(
-    tag = "URL",
-    start = position,
-    end = position
-).firstOrNull()?.item?.let { onFound(it) }
+fun AnnotatedString.urlAt(position: Int, onFound: (String) -> Unit) =
+    getStringAnnotations(tag = "URL", start = position, end = position).firstOrNull()?.item?.let {
+        onFound(it)
+    }
