@@ -23,5 +23,5 @@ jobs:
           base: master
           head: master
           merge_method:	merge
-          auto_approve: true
-          auto_merge: true
+          auto_approve: false
+          auto_merge: false
