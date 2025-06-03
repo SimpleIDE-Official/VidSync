@@ -19,7 +19,9 @@ jobs:
         with:
           token: ${{ github.token }}
           repo:  VidSync
-          owner: scto
+          owner:  SimpleIDE-Official
           base: master
           head: master
           merge_method:	merge
+          #auto_approve: false
+          #auto_merge: true
